@@ -1,5 +1,6 @@
 
 import './App.css'
+import Mynavbar from './components/Mynavbar'
 import Homepage from './pages/Homepage'
 
 function App() {
@@ -7,7 +8,7 @@ function App() {
 
   return (
     <>
-      <h1 className='bg-red-600 text-8xl'>what&apos;s up bro!</h1>
+      <Mynavbar/>
       <Homepage/>
     </>
   )

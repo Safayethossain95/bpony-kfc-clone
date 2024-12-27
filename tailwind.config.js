@@ -6,17 +6,17 @@ export default {
       container: {
         center: true, // Center the container by default
         padding: {
-          DEFAULT: '1rem', // Default padding for all screen sizes
+          DEFAULT: '0', // Default padding for all screen sizes
           sm: '2rem', // Padding for small screens
-          lg: '4rem', // Padding for large screens
-          xl: '5rem', // Padding for extra-large screens
+          lg: '2rem', // Padding for large screens
+          xl: '4rem', // Padding for extra-large screens
           '2xl': '6rem', // Padding for 2xl screens
         },
         screens: {
           sm: '100%', // Take full width for small screens
           md: '100%', // Take full width for medium screens
-          lg: '1156px', // Fixed width for large screens
-          xl: '1283px', // Fixed width for extra-large screens
+          lg: '1283px', // Fixed width for large screens
+          xl: '1873px', // Fixed width for extra-large screens
         },
       },
     },
