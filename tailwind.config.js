@@ -3,6 +3,9 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      screens: {
+        'xl-1400': '1400px',
+      },
       container: {
         center: true, // Center the container by default
         padding: {
@@ -10,7 +13,7 @@ export default {
           sm: '2rem', // Padding for small screens
           lg: '2rem', // Padding for large screens
           xl: '4rem', // Padding for extra-large screens
-          '2xl': '6rem', // Padding for 2xl screens
+          '2xl': '4rem', // Padding for 2xl screens
         },
         screens: {
           sm: '100%', // Take full width for small screens
