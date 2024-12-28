@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { selectTotalPrice, toggleOpen } from "../store/exampleSlice";
+import { selectTotalPrice, toggleMapsOpen, toggleOpen } from "../store/exampleSlice";
 
 const Mynavbar = () => {
   const dispatch = useDispatch();
@@ -21,7 +21,7 @@ const Mynavbar = () => {
             />
           </div>
         </div>
-        <div className="location cursor-pointer h-[48px] ms-[12px] rounded-[17px] border-[#D0CFCE] z-10 border-2 px-4 py-2 bg-[#F5F4F2] w-[346px] flex items-center justify-between">
+        <div onClick={()=>dispatch(toggleMapsOpen())} className="location cursor-pointer h-[48px] ms-[12px] rounded-[17px] border-[#D0CFCE] z-10 border-2 px-4 py-2 bg-[#F5F4F2] w-[346px] flex items-center justify-between">
           <div className="div flex items-center">
           <img src="/assets/locationicon.png" alt="" />
           <p className="font-medium">Orama qalashyǵy, 16, entrance 2</p>
@@ -31,10 +31,10 @@ const Mynavbar = () => {
 
         <div className="right ms-auto flex gap-4">
           <div className="flex">
-            <img src="/assets/notification.png" alt="" />
-            <img src="/assets/language.png" alt="" />
+            <img className="h-[48px]" src="/assets/notification.png" alt="" />
+            <img className="h-[46px]" src="/assets/language.png" alt="" />
           </div>
-          {cart.length !== 0 && (
+          {cart?.length !== 0 && (
             <button
               onClick={() => dispatch(toggleOpen())}
               className="flex items-center space-x-2 bg-[#FCE000] text-black font-medium h-[50px] px-4 rounded-[16px]"
@@ -46,6 +46,7 @@ const Mynavbar = () => {
           )}
         </div>
       </div>
+      
     </>
   );
 };

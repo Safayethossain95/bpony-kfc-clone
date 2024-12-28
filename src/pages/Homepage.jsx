@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
 
 import { useEffect, useState } from "react";
@@ -8,32 +9,111 @@ import {
   decrementQuantity,
   incrementQuantity,
   selectTotalPrice,
-  toggleClose
+  toggleClose,
+  toggleMapsOpen,
+  loadCart
 } from "../store/exampleSlice";
-import { tabs } from "../api/data";
+// import { tabs } from "../api/data";
+import axios from 'axios'
+import { tabsfr } from "../api/data";
+import { backendAPI } from "../config/config";
 const Homepage = () => {
+
+  
  
   // const value = useSelector((state) => state.example.value);
   const cart = useSelector((state) => state.example.cart);
+  
   const isOpen = useSelector((state) => state.example.isOpen);
+  const isOpenMaps = useSelector((state) => state.example.isOpenMaps);
   const dispatch = useDispatch();
   const totalPrice = useSelector(selectTotalPrice);
   const [activeTab, setActiveTab] = useState("tab1");
+  const [tabs,settabs] = useState(tabsfr)
+  useEffect(() => {
+    dispatch(loadCart())
+    
+  }, []);
+
+
+  useEffect(() => {
+    // Fetch food data from the backend
+    axios
+      .get(`${backendAPI}/foodget`)  // Replace with your backend URL if needed
+      .then((response) => {
+        if (response){
+          console.log(response.data)
+          settabs(response.data);  // Set the data in state
+        }
+        
+          
+      })
+      .catch((err) => {
+        console.log(err)
+      });
+
+      
+  }, []);
+
+
+  async function loadcartme(){
+    axios.get(`${backendAPI}/cartget`).then((response) => {
+      if (response){
+        console.log(response.data)
+        dispatch(loadCart(response.data));  // Set the data in state
+      }
+      
+        
+    })
+    .catch((err) => {
+      console.log(err)
+    });
+  }
 
   useEffect(()=>{
-    console.log(isOpen)
-  },[isOpen])
-  useEffect(() => {
+    loadcartme()
+  },[])
+  // useEffect(() => {
     
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       entries.forEach((entry) => {
+  //         if (entry.isIntersecting) {
+  //           setActiveTab(entry.target.id);
+  //         }
+  //       });
+  //     },
+  //     { rootMargin: "-100px 0px 0px 0px", threshold: 0.1 } // Adjust -100px for offset
+  //   );
+
+  //   tabs.forEach((tab) => {
+  //     const element = document.getElementById(tab.id);
+  //     if (element) observer.observe(element);
+  //   });
+
+  //   return () => observer.disconnect(); // Cleanup on unmount
+  // }, []);
+
+  // const handleScrollTo = (id) => {
+  //   const element = document.getElementById(id);
+
+  //   if (element) {
+  //     console.log(element.offsetTop + "px");
+  //     element.scrollIntoView({ behavior: "smooth" });
+  //     setActiveTab(id);
+  //   }
+  // };
+  useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          console.log("Intersecting:", entry.target.id, entry.isIntersecting);
           if (entry.isIntersecting) {
             setActiveTab(entry.target.id);
           }
         });
       },
-      { rootMargin: "-100px 0px 0px 0px", threshold: 0.1 } // Adjust -100px for offset
+      { rootMargin: "-70px 0px 0px 0px", threshold: 0.1 }
     );
 
     tabs.forEach((tab) => {
@@ -41,24 +121,24 @@ const Homepage = () => {
       if (element) observer.observe(element);
     });
 
-    return () => observer.disconnect(); // Cleanup on unmount
+    return () => observer.disconnect();
   }, []);
 
   const handleScrollTo = (id) => {
     const element = document.getElementById(id);
-
     if (element) {
-      console.log(element.offsetTop + "px");
-      element.scrollIntoView({ behavior: "smooth" });
+      const yOffset = -80;
+      const yPosition = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+      window.scrollTo({ top: yPosition, behavior: "smooth" });
       setActiveTab(id);
     }
   };
-  
 
   return (
     <>
       {/* <div className="h-[80px]"></div> */}
-      <div className=" h-screen w-full overflow-y-scroll  mr-0">
+      <div className="  w-full   mr-0">
         <div className="container relative">
           <div className="grid relative min-w-[990px] xl-1400:grid-cols-[2.3fr_6.7fr_3fr] grid-cols-[3fr_9fr] lg:grid-cols-[3fr_9fr]">
             {/* Sidebar */}
@@ -95,7 +175,7 @@ const Homepage = () => {
                   </h6>
                   <div className="flex">
                     <div
-                      className="flex mr-[8px] items-center gap-2 bg-white bg-opacity-80 pt-[8px] pr-[18px] pb-[8px] pl-[8px]
+                      className="flex mr-[8px] items-center gap-2 bg-white bg-opacity-80 cursor-pointer duration-300 hover:bg-opacity-90 pt-[8px] pr-[18px] pb-[8px] pl-[8px]
               rounded-[16px] shadow-md"
                     >
                       <div className="flex items-center gap-1">
@@ -117,7 +197,7 @@ const Homepage = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="div flex items-center gap-2 bg-white bg-opacity-80 px-3 py-2 rounded-[16px] shadow-md">
+                    <div className="div flex items-center gap-2 bg-white bg-opacity-80 hover:bg-opacity-90 duration-300 px-3 py-2 rounded-[16px] shadow-md">
                       <div className="flex items-center justify-center w-8 h-8 rounded-full ">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -135,7 +215,7 @@ const Homepage = () => {
 
               {tabs.map((tab) => (
                 <div key={tab.id} id={tab.id} className="mb-8 py-4">
-                  {tab.label === "What's new" ? (
+                  {tab.id === "tab1" ? (
                     <div className="flex items-center  bg-[#E4F2DC] text-green-700 rounded-lg">
                       <div className="flex items-center justify-center  text-white">
                         <img
@@ -178,7 +258,8 @@ const Homepage = () => {
                                   <div className=" text-center mt-[38px]">
                                     <button
                                       onClick={() => {
-                                        dispatch(addToCart(item));
+                                        dispatch(addToCart({...item,quantity:1}));
+                                        window.location.reload();
                                       }}
                                       className="bg-[#F5F4F2] w-full  rounded-[18px] justify-center text-black flex items-center p-3  focus:outline-none focus:shadow-outline"
                                     >
@@ -207,7 +288,7 @@ const Homepage = () => {
 
             <div className="  bg-white p-4 mt-[110px] hidden xl-1400:block fixed w-[21%]  h-[calc(100vh-130px)]    right-[5%] rounded-[24px] m-4 flex-col lg-flex-row">
               <h3 className="text-[24px] font-bold relative">Cart</h3>
-              {cart.length==0?
+              {cart?.length==0?
               <>
               <div className="h-full  flex items-center justify-center">
                 <div className="div flex flex-col">
@@ -223,7 +304,7 @@ const Homepage = () => {
               
               (
                 <div className="overflow-y-scroll max-h-[calc(100%-200px)]"> {/* Wrapper with scrolling */}
-                  {cart.map((item, i) => {
+                  {cart?.map((item, i) => {
                     const isLastItem = i === cart.length - 1;
                     return (
                       <div
@@ -255,7 +336,7 @@ const Homepage = () => {
                           <div className="flex items-center bg-gray-100 rounded-full px-3 h-[32px]">
                             <button
                               onClick={() =>
-                                dispatch(decrementQuantity({ foodname: item.foodname }))
+                                dispatch(decrementQuantity({ foodname: item.foodname,quantity: 1 }))
                               }
                               className="text-gray-500 text-[28px] font-semibold mb-[3px] hover:text-gray-800 px-2 pointer-events-auto"
                             >
@@ -264,7 +345,8 @@ const Homepage = () => {
                             <span className="text-sm font-bold px-2">{item.quantity}</span>
                             <button
                               onClick={() =>
-                                dispatch(incrementQuantity({ foodname: item.foodname }))
+                              {dispatch(incrementQuantity({ foodname: item.foodname }));
+                            }
                               }
                               className="text-gray-500 text-[28px] font-semibold mb-[3px] hover:text-gray-800 px-2 pointer-events-auto"
                             >
@@ -275,7 +357,7 @@ const Homepage = () => {
                       </div>
                     );
                   })}
-                  {cart.length!==0&&<div className="div flex justify-between  mt-3">
+                  {cart?.length!==0&&<div className="div flex justify-between  mt-3">
               <p className="text-[18px] font-medium">Service fee</p>
               <p className="text-[20px] font-semibold">NaN ₸</p>
               </div>}
@@ -315,6 +397,46 @@ const Homepage = () => {
           </div>
         </div>
       </div>
+      {isOpenMaps &&  (
+        <div onClick={() => dispatch(toggleClose())} className="fixed justify-center items-center inset-0 flex  right-0 bg-black bg-opacity-50 z-50">
+
+          
+          <div
+           onClick={(e) => e.stopPropagation()}
+            className="bg-white relative min-w-[962px] h-[500px] p-[20px] overflow-auto  rounded-[30px] shadow-lg "
+          >
+            {/* Close button */}
+            <h5 className="absolute top-3 left-4 text-[23px] font-bold ">Enter Delivery Address</h5>
+            <p className="absolute top-11 left-4 text-[14px] ">Or else how will we know where to deliver?</p>
+            <button
+              onClick={()=>{dispatch(toggleMapsOpen()); dispatch(clearCart())}}
+              className="absolute top-3 right-2 px-3 py-1  text-gray-400 rounded"
+            >
+              Close
+            </button>
+            <div className=" mt-[70px] w-full"> {/* Wrapper with scrolling */}
+              
+                  {/* {cart.length!==0&&<div className="div flex justify-between  mt-3">
+              <p className="text-[18px] font-medium">Service fee</p>
+              <p className="text-[20px] font-semibold">NaN ₸</p>
+              </div>} */}
+            <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2886.9087840542206!2d-79.48918781516208!3d43.65006609659147!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x882b36883360d2b9%3A0x222775b413b4afc2!2s23%20Jane%20St%2C%20Toronto%2C%20ON%20M6S%203Y3%2C%20Canada!5e0!3m2!1sen!2sbd!4v1735397846761!5m2!1sen!2sbd"
+        width="900"
+        height="450"
+        style={{ border: 0 }}
+        allowFullScreen
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        title="Google Map"
+      ></iframe>
+           
+              {/* </div> */}
+                
+                </div>
+          </div>
+        </div>
+      )}
         {/* Modal */}
         {isOpen &&  (
         <div onClick={() => dispatch(toggleClose())} className="fixed inset-0 flex  right-0 bg-black bg-opacity-50 z-50">

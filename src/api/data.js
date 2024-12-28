@@ -1,7 +1,7 @@
-export const tabs = [
+export const tabsfr = [
     {
       id: "tab1",
-      label: "What's new",
+      label: "What's new fr",
       items: [],
     },
     {
@@ -58,24 +58,31 @@ export const tabs = [
       label: "Combo",
       items: [
         {
-          foodname: "Basket S: wings, strips, nuggets 2",
+          foodname: "Double Chef Burger Combo",
           imgurl:
-            "https://eda.yandex/images/3793239/5bb2e868478071eb191df91fca266e25-216x188.jpeg",
-          price: 4250,
+            "https://eda.yandex/images/3805444/863bc0b5ec247958aea807b0e7c4951e-216x188.jpeg",
+          price: 3790,
           unit: "₸",
         },
         {
-          foodname: "Friends Box 2",
+          foodname: "Chef Burger Combo",
           imgurl:
-            "https://eda.yandex/images/13058477/e593bba51dd8d458443ea6f69c988e82-216x188.jpeg",
-          price: 9250,
+            "https://eda.yandex/images/3806315/9e78443fd3863e54ee40e42a2d8ba842-216x188.jpeg",
+          price: 3000,
           unit: "₸",
         },
         {
-          foodname: "Basket S. Wings and Legs 2",
+          foodname: "Boxmaster Combo",
           imgurl:
-            "https://eda.yandex/images/1397595/9aee09ee93bf09ce2095488df7a41615-216x188.jpeg",
-          price: 3300,
+            "https://eda.yandex/images/3793239/3975c5729453b6e41a5e8dc73460299f-216x188.jpeg",
+          price: 3450,
+          unit: "₸",
+        },
+        {
+          foodname: "Chef Tower Combo",
+          imgurl:
+            "https://eda.yandex/images/12773219/829f2928573f629b9bc3aa693bc595a0-216x188.jpeg",
+          price: 3500,
           unit: "₸",
         },
       ],
