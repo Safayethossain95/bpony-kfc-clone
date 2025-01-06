@@ -22,53 +22,84 @@ const exampleSlice = createSlice({
       state.cart = action.payload  // Set cart to the response data
        
     },
-    addToCart: async (state, action) => {
-     
-    
-      try {
-        // Ensure that only serializable data is sent to the backend
-        const response = await axios.post(`${backendAPI}/cartpost`, {
-          foodname: action.payload.foodname, // Ensure this is a simple string
-          imgurl: action.payload.imgurl, // Simple string URL
-          price: action.payload.price, // Simple number
-          unit: action.payload.unit, // Simple string or number
-          quantity:  action.payload.quantity // Simple number
-        });
-        state.cart =  response.data
-        // You can handle the response if necessary
-        console.log("Cart submitted successfully:", response.data);
-        
-      } catch (error) {
-        // Handle error if the request fails
-        console.error("Error submitting cart:", error);
-      }
-    },
+  addToCart: (state, action) => {
+    // Immer allows us to write "mutative" logic in reducers, but it actually produces a new state
+    // based on the changes we make to the draft state.
+    const existingItemIndex = state.cart.findIndex(item => item.foodname === action.payload.foodname);
+
+    if (existingItemIndex >= 0) {
+      // If the item already exists, increment the quantity
+      state.cart[existingItemIndex].quantity += action.payload.quantity;
+    } else {
+      // Otherwise, add the new item to the cart
+      state.cart.push(action.payload);
+    }
+
+    // Perform the async operation after updating the state
+    axios.post(`${backendAPI}/cartpost`, {
+      foodname: action.payload.foodname, // Ensure this is a simple string
+      imgurl: action.payload.imgurl, // Simple string URL
+      price: action.payload.price, // Simple number
+      unit: action.payload.unit, // Simple string or number
+      quantity: 1 // Simple number
+    })
+    .then(response => {
+      console.log("Cart item added successfully:", response.data);
+    })
+    .catch(error => {
+      // Handle error if the request fails
+      console.error("Error submitting cart:", error);
+    });
+  },
     
     incrementQuantity: (state, action) => {
       const item = state.cart.find(item => item.foodname === action.payload.foodname);
     
       if (item) {
         // Increment the quantity
-        
-        
+        item.quantity += 1;
+    
         // Send the updated item to the backend using Axios POST request
-        axios.post(`${backendAPI}/cartpost`, {
+        axios.post(`${backendAPI}/cartincrement`, {
           foodname: item.foodname,
-          imgurl: item.imgurl, // Send any other relevant data
-          price: item.price,
-          unit: item.unit,
-          quantity: 1 // Send the updated quantity
+          quantity: 1 // Increment the quantity by 1
         })
         .then((response) => {
-          
-          console.log('Cart item updated successfully:', response.data);
-          window.location.reload()
+          console.log('Cart item incremented successfully:', response.data);
+    
+          const updatedCart = state.cart.map((cartItem) => {
+            // Update the matching food item in the cart
+            if (cartItem.foodname === response.data.foodname) {
+              return { ...cartItem, quantity: cartItem.quantity }; // Update state if needed
+            }
+            return cartItem; // Keep other items unchanged
+          });
+    
+          state.cart = updatedCart; // Update the state.cart directly
         })
         .catch((error) => {
-          console.error('Error updating cart item:', error);
+          console.error('Error incrementing cart item:', error);
         });
+      } else {
+        // If the item doesn't exist in the cart, optionally add it to the cart
+        const newItem = {
+          foodname: action.payload.foodname,
+          quantity: 1 // Start with a quantity of 1
+        };
+    
+        state.cart.push(newItem);
+    
+        // Optionally sync with backend
+        axios.post(`${backendAPI}/cartincrement`, newItem)
+          .then((response) => {
+            console.log('New cart item added successfully:', response.data);
+          })
+          .catch((error) => {
+            console.error('Error adding new cart item:', error);
+          });
       }
     },
+    
     
     decrementQuantity: (state, action) => {
       const item = state.cart.find(item => item.foodname === action.payload.foodname);
@@ -85,7 +116,21 @@ const exampleSlice = createSlice({
           })
           .then((response) => {
             console.log('Cart item updated successfully:', response.data);
-            window.location.reload(); // Reload the page after updating
+            const updatedCart = state.cart
+      .map((item) => {
+        // Find the matching food item and decrement the quantity
+        if (item.foodname === item.foodname) {
+          if (item.quantity > 1) {
+            return { ...item, quantity: item.quantity - 1 };
+          } else if (item.quantity === 1) {
+            // If quantity reaches zero, filter out the item
+            return null;
+          }
+        }
+        return item;
+      })
+      .filter((item) => item !== null); 
+         state.cart = updatedCart; 
           })
           .catch((error) => {
             console.error('Error updating cart item:', error);
@@ -95,13 +140,12 @@ const exampleSlice = createSlice({
           state.cart = state.cart.filter(cartItem => cartItem.foodname !== action.payload.foodname);
     
           // Send the removal to the backend
-          axios.post(`${backendAPI}/cartDecrement`, {
+          axios.post(`${backendAPI}/cartdecrement`, {
             foodname: item.foodname,
             quantity: 1 // Decrement the quantity by 1
           })
           .then((response) => {
-            console.log('Cart item removed successfully:', response.data);
-            window.location.reload(); // Reload the page after removing the item
+            console.log('Cart item removed successfully:', response.data); // Reload the page after removing the item
           })
           .catch((error) => {
             console.error('Error removing cart item:', error);
